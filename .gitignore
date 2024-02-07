@@ -1,0 +1,8 @@
+build
+node_modules/
+jspm_packages/
+logs/
+logs
+
+.env
+

@@ -12,7 +12,6 @@ import { User } from "../entity/user";
 
 const userAuth: RequestHandler = handler(async (req: Request, res: Response, next: NextFunction) => {
     const token = req.header("authorization").split(" ")[1];
-    console.log(token);
     if (!token) {
         next(createError(httpStatus.UNAUTHORIZED, "No token, authentication denied"),);
     }

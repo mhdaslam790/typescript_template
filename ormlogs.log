@@ -1,0 +1,468 @@
+[2024-05-09T12:28:37.330Z][QUERY]: SELECT VERSION() AS `version`
+[2024-05-09T12:28:37.340Z][QUERY]: START TRANSACTION
+[2024-05-09T12:28:37.341Z][QUERY]: SELECT DATABASE() AS `db_name`
+[2024-05-09T12:28:37.343Z][QUERY]: SELECT `TABLE_SCHEMA`, `TABLE_NAME`, `TABLE_COMMENT` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'todkart' AND `TABLE_NAME` = 'user' UNION SELECT `TABLE_SCHEMA`, `TABLE_NAME`, `TABLE_COMMENT` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'todkart' AND `TABLE_NAME` = 'i_user'
+[2024-05-09T12:28:37.348Z][QUERY]: 
+                SELECT
+                    *
+                FROM
+                    `INFORMATION_SCHEMA`.`COLUMNS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+                 UNION 
+                SELECT
+                    *
+                FROM
+                    `INFORMATION_SCHEMA`.`COLUMNS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+                
+[2024-05-09T12:28:37.349Z][QUERY]: SELECT * FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'i_user'
+            ) `kcu` WHERE `CONSTRAINT_NAME` = 'PRIMARY'
+[2024-05-09T12:28:37.349Z][QUERY]: 
+            SELECT
+                `SCHEMA_NAME`,
+                `DEFAULT_CHARACTER_SET_NAME` as `CHARSET`,
+                `DEFAULT_COLLATION_NAME` AS `COLLATION`
+            FROM `INFORMATION_SCHEMA`.`SCHEMATA`
+            
+[2024-05-09T12:28:37.349Z][QUERY]: 
+            SELECT
+                `s`.*
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`STATISTICS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`STATISTICS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+            ) `s`
+            LEFT JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+            ) `rc`
+                ON
+                    `s`.`INDEX_NAME` = `rc`.`CONSTRAINT_NAME`
+                    AND
+                    `s`.`TABLE_SCHEMA` = `rc`.`CONSTRAINT_SCHEMA`
+            WHERE
+                `s`.`INDEX_NAME` != 'PRIMARY'
+                AND
+                `rc`.`CONSTRAINT_NAME` IS NULL
+            
+[2024-05-09T12:28:37.349Z][QUERY]: 
+            SELECT
+                `kcu`.`TABLE_SCHEMA`,
+                `kcu`.`TABLE_NAME`,
+                `kcu`.`CONSTRAINT_NAME`,
+                `kcu`.`COLUMN_NAME`,
+                `kcu`.`REFERENCED_TABLE_SCHEMA`,
+                `kcu`.`REFERENCED_TABLE_NAME`,
+                `kcu`.`REFERENCED_COLUMN_NAME`,
+                `rc`.`DELETE_RULE` `ON_DELETE`,
+                `rc`.`UPDATE_RULE` `ON_UPDATE`
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'i_user'
+            ) `kcu`
+            INNER JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+            ) `rc`
+                ON
+                    `rc`.`CONSTRAINT_SCHEMA` = `kcu`.`CONSTRAINT_SCHEMA`
+                    AND
+                    `rc`.`TABLE_NAME` = `kcu`.`TABLE_NAME`
+                    AND
+                    `rc`.`CONSTRAINT_NAME` = `kcu`.`CONSTRAINT_NAME`
+            
+[2024-05-09T12:28:37.369Z][QUERY]: SELECT VERSION() AS `version`
+[2024-05-09T12:28:37.371Z][QUERY]: SELECT * FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = 'todkart' AND `TABLE_NAME` = 'typeorm_metadata'
+[2024-05-09T12:28:37.377Z][QUERY]: ALTER TABLE `user` CHANGE `login_time` `login_time` int NULL
+[2024-05-09T12:28:37.385Z][QUERY]: ALTER TABLE `user` CHANGE `password_reset_token` `password_reset_token` varchar(255) NULL
+[2024-05-09T12:28:37.392Z][QUERY]: ALTER TABLE `user` CHANGE `ip_address` `ip_address` varchar(255) NULL
+[2024-05-09T12:28:37.398Z][QUERY]: ALTER TABLE `user` CHANGE `created_at` `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+[2024-05-09T12:28:37.404Z][QUERY]: ALTER TABLE `user` CHANGE `updated_at` `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+[2024-05-09T12:28:37.410Z][QUERY]: ALTER TABLE `user` CHANGE `verification_token` `verification_token` varchar(255) NULL
+[2024-05-09T12:28:37.417Z][QUERY]: COMMIT
+[2024-05-09T12:28:38.593Z][QUERY]: SELECT VERSION() AS `version`
+[2024-05-09T12:28:38.602Z][QUERY]: START TRANSACTION
+[2024-05-09T12:28:38.603Z][QUERY]: SELECT DATABASE() AS `db_name`
+[2024-05-09T12:28:38.604Z][QUERY]: SELECT `TABLE_SCHEMA`, `TABLE_NAME`, `TABLE_COMMENT` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'todkart' AND `TABLE_NAME` = 'user' UNION SELECT `TABLE_SCHEMA`, `TABLE_NAME`, `TABLE_COMMENT` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'todkart' AND `TABLE_NAME` = 'i_user'
+[2024-05-09T12:28:38.624Z][QUERY]: 
+                SELECT
+                    *
+                FROM
+                    `INFORMATION_SCHEMA`.`COLUMNS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+                 UNION 
+                SELECT
+                    *
+                FROM
+                    `INFORMATION_SCHEMA`.`COLUMNS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+                
+[2024-05-09T12:28:38.625Z][QUERY]: SELECT * FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'i_user'
+            ) `kcu` WHERE `CONSTRAINT_NAME` = 'PRIMARY'
+[2024-05-09T12:28:38.625Z][QUERY]: 
+            SELECT
+                `SCHEMA_NAME`,
+                `DEFAULT_CHARACTER_SET_NAME` as `CHARSET`,
+                `DEFAULT_COLLATION_NAME` AS `COLLATION`
+            FROM `INFORMATION_SCHEMA`.`SCHEMATA`
+            
+[2024-05-09T12:28:38.625Z][QUERY]: 
+            SELECT
+                `s`.*
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`STATISTICS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`STATISTICS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+            ) `s`
+            LEFT JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+            ) `rc`
+                ON
+                    `s`.`INDEX_NAME` = `rc`.`CONSTRAINT_NAME`
+                    AND
+                    `s`.`TABLE_SCHEMA` = `rc`.`CONSTRAINT_SCHEMA`
+            WHERE
+                `s`.`INDEX_NAME` != 'PRIMARY'
+                AND
+                `rc`.`CONSTRAINT_NAME` IS NULL
+            
+[2024-05-09T12:28:38.625Z][QUERY]: 
+            SELECT
+                `kcu`.`TABLE_SCHEMA`,
+                `kcu`.`TABLE_NAME`,
+                `kcu`.`CONSTRAINT_NAME`,
+                `kcu`.`COLUMN_NAME`,
+                `kcu`.`REFERENCED_TABLE_SCHEMA`,
+                `kcu`.`REFERENCED_TABLE_NAME`,
+                `kcu`.`REFERENCED_COLUMN_NAME`,
+                `rc`.`DELETE_RULE` `ON_DELETE`,
+                `rc`.`UPDATE_RULE` `ON_UPDATE`
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'i_user'
+            ) `kcu`
+            INNER JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+            ) `rc`
+                ON
+                    `rc`.`CONSTRAINT_SCHEMA` = `kcu`.`CONSTRAINT_SCHEMA`
+                    AND
+                    `rc`.`TABLE_NAME` = `kcu`.`TABLE_NAME`
+                    AND
+                    `rc`.`CONSTRAINT_NAME` = `kcu`.`CONSTRAINT_NAME`
+            
+[2024-05-09T12:28:38.637Z][QUERY]: SELECT VERSION() AS `version`
+[2024-05-09T12:28:38.639Z][QUERY]: SELECT * FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = 'todkart' AND `TABLE_NAME` = 'typeorm_metadata'
+[2024-05-09T12:28:38.645Z][QUERY]: ALTER TABLE `user` CHANGE `login_time` `login_time` int NULL
+[2024-05-09T12:28:38.651Z][QUERY]: ALTER TABLE `user` CHANGE `password_reset_token` `password_reset_token` varchar(255) NULL
+[2024-05-09T12:28:38.657Z][QUERY]: ALTER TABLE `user` CHANGE `ip_address` `ip_address` varchar(255) NULL
+[2024-05-09T12:28:38.662Z][QUERY]: ALTER TABLE `user` CHANGE `created_at` `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+[2024-05-09T12:28:38.669Z][QUERY]: ALTER TABLE `user` CHANGE `updated_at` `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+[2024-05-09T12:28:38.673Z][QUERY]: ALTER TABLE `user` CHANGE `verification_token` `verification_token` varchar(255) NULL
+[2024-05-09T12:28:38.680Z][QUERY]: COMMIT
+[2024-05-09T12:28:44.005Z][QUERY]: SELECT `User`.`id` AS `User_id`, `User`.`first_name` AS `User_first_name`, `User`.`last_name` AS `User_last_name`, `User`.`username` AS `User_username`, `User`.`login_time` AS `User_login_time`, `User`.`password_hash` AS `User_password_hash`, `User`.`password_reset_token` AS `User_password_reset_token`, `User`.`email` AS `User_email`, `User`.`ip_address` AS `User_ip_address`, `User`.`status` AS `User_status`, `User`.`role` AS `User_role`, `User`.`created_at` AS `User_created_at`, `User`.`updated_at` AS `User_updated_at`, `User`.`verification_token` AS `User_verification_token` FROM `user` `User` WHERE ((`User`.`id` = ?)) LIMIT 1 -- PARAMETERS: [2]
+[2024-05-09T12:28:50.246Z][QUERY]: SELECT `User`.`id` AS `User_id`, `User`.`first_name` AS `User_first_name`, `User`.`last_name` AS `User_last_name`, `User`.`username` AS `User_username`, `User`.`login_time` AS `User_login_time`, `User`.`password_hash` AS `User_password_hash`, `User`.`password_reset_token` AS `User_password_reset_token`, `User`.`email` AS `User_email`, `User`.`ip_address` AS `User_ip_address`, `User`.`status` AS `User_status`, `User`.`role` AS `User_role`, `User`.`created_at` AS `User_created_at`, `User`.`updated_at` AS `User_updated_at`, `User`.`verification_token` AS `User_verification_token` FROM `user` `User` WHERE ((`User`.`username` = ?)) LIMIT 1 -- PARAMETERS: ["mhdaslam790"]
+[2024-05-09T12:28:50.314Z][QUERY]: SELECT `User`.`id` AS `User_id`, `User`.`first_name` AS `User_first_name`, `User`.`last_name` AS `User_last_name`, `User`.`username` AS `User_username`, `User`.`login_time` AS `User_login_time`, `User`.`password_hash` AS `User_password_hash`, `User`.`password_reset_token` AS `User_password_reset_token`, `User`.`email` AS `User_email`, `User`.`ip_address` AS `User_ip_address`, `User`.`status` AS `User_status`, `User`.`role` AS `User_role`, `User`.`created_at` AS `User_created_at`, `User`.`updated_at` AS `User_updated_at`, `User`.`verification_token` AS `User_verification_token` FROM `user` `User` WHERE `User`.`id` IN (?) -- PARAMETERS: [2]
+[2024-05-09T12:28:50.316Z][QUERY]: START TRANSACTION
+[2024-05-09T12:28:50.318Z][QUERY]: UPDATE `user` SET `login_time` = ? WHERE `id` IN (?) -- PARAMETERS: [1715257730,2]
+[2024-05-09T12:28:50.319Z][QUERY]: COMMIT
+[2024-05-09T12:28:59.389Z][QUERY]: SELECT VERSION() AS `version`
+[2024-05-09T12:28:59.400Z][QUERY]: START TRANSACTION
+[2024-05-09T12:28:59.401Z][QUERY]: SELECT DATABASE() AS `db_name`
+[2024-05-09T12:28:59.401Z][QUERY]: SELECT `TABLE_SCHEMA`, `TABLE_NAME`, `TABLE_COMMENT` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'todkart' AND `TABLE_NAME` = 'user' UNION SELECT `TABLE_SCHEMA`, `TABLE_NAME`, `TABLE_COMMENT` FROM `INFORMATION_SCHEMA`.`TABLES` WHERE `TABLE_SCHEMA` = 'todkart' AND `TABLE_NAME` = 'i_user'
+[2024-05-09T12:28:59.421Z][QUERY]: 
+                SELECT
+                    *
+                FROM
+                    `INFORMATION_SCHEMA`.`COLUMNS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+                 UNION 
+                SELECT
+                    *
+                FROM
+                    `INFORMATION_SCHEMA`.`COLUMNS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+                
+[2024-05-09T12:28:59.422Z][QUERY]: SELECT * FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'i_user'
+            ) `kcu` WHERE `CONSTRAINT_NAME` = 'PRIMARY'
+[2024-05-09T12:28:59.422Z][QUERY]: 
+            SELECT
+                `SCHEMA_NAME`,
+                `DEFAULT_CHARACTER_SET_NAME` as `CHARSET`,
+                `DEFAULT_COLLATION_NAME` AS `COLLATION`
+            FROM `INFORMATION_SCHEMA`.`SCHEMATA`
+            
+[2024-05-09T12:28:59.422Z][QUERY]: 
+            SELECT
+                `s`.*
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`STATISTICS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`STATISTICS`
+                WHERE
+                    `TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+            ) `s`
+            LEFT JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+            ) `rc`
+                ON
+                    `s`.`INDEX_NAME` = `rc`.`CONSTRAINT_NAME`
+                    AND
+                    `s`.`TABLE_SCHEMA` = `rc`.`CONSTRAINT_SCHEMA`
+            WHERE
+                `s`.`INDEX_NAME` != 'PRIMARY'
+                AND
+                `rc`.`CONSTRAINT_NAME` IS NULL
+            
+[2024-05-09T12:28:59.422Z][QUERY]: 
+            SELECT
+                `kcu`.`TABLE_SCHEMA`,
+                `kcu`.`TABLE_NAME`,
+                `kcu`.`CONSTRAINT_NAME`,
+                `kcu`.`COLUMN_NAME`,
+                `kcu`.`REFERENCED_TABLE_SCHEMA`,
+                `kcu`.`REFERENCED_TABLE_NAME`,
+                `kcu`.`REFERENCED_COLUMN_NAME`,
+                `rc`.`DELETE_RULE` `ON_DELETE`,
+                `rc`.`UPDATE_RULE` `ON_UPDATE`
+            FROM (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`KEY_COLUMN_USAGE` `kcu`
+                WHERE
+                    `kcu`.`TABLE_SCHEMA` = 'todkart'
+                    AND
+                    `kcu`.`TABLE_NAME` = 'i_user'
+            ) `kcu`
+            INNER JOIN (
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'user'
+             UNION 
+                SELECT
+                    *
+                FROM `INFORMATION_SCHEMA`.`REFERENTIAL_CONSTRAINTS`
+                WHERE
+                    `CONSTRAINT_SCHEMA` = 'todkart'
+                    AND
+                    `TABLE_NAME` = 'i_user'
+            ) `rc`
+                ON
+                    `rc`.`CONSTRAINT_SCHEMA` = `kcu`.`CONSTRAINT_SCHEMA`
+                    AND
+                    `rc`.`TABLE_NAME` = `kcu`.`TABLE_NAME`
+                    AND
+                    `rc`.`CONSTRAINT_NAME` = `kcu`.`CONSTRAINT_NAME`
+            
+[2024-05-09T12:28:59.440Z][QUERY]: SELECT VERSION() AS `version`
+[2024-05-09T12:28:59.442Z][QUERY]: SELECT * FROM `INFORMATION_SCHEMA`.`COLUMNS` WHERE `TABLE_SCHEMA` = 'todkart' AND `TABLE_NAME` = 'typeorm_metadata'
+[2024-05-09T12:28:59.447Z][QUERY]: ALTER TABLE `user` CHANGE `login_time` `login_time` int NULL
+[2024-05-09T12:28:59.456Z][QUERY]: ALTER TABLE `user` CHANGE `password_reset_token` `password_reset_token` varchar(255) NULL
+[2024-05-09T12:28:59.461Z][QUERY]: ALTER TABLE `user` CHANGE `ip_address` `ip_address` varchar(255) NULL
+[2024-05-09T12:28:59.468Z][QUERY]: ALTER TABLE `user` CHANGE `created_at` `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+[2024-05-09T12:28:59.475Z][QUERY]: ALTER TABLE `user` CHANGE `updated_at` `updated_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+[2024-05-09T12:28:59.479Z][QUERY]: ALTER TABLE `user` CHANGE `verification_token` `verification_token` varchar(255) NULL
+[2024-05-09T12:28:59.486Z][QUERY]: COMMIT

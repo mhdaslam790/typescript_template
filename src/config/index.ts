@@ -6,8 +6,14 @@ if (envFound.error) {
 }
 export const config = {
     port: process.env.PORT || 8080,
-    dbUrl: process.env.MONGODB_URI,
     jwtSecret: process.env.JWT_SECRET,
+    dbType: process.env.DBTYPE || "mysql",
+    dbHost: process.env.DBHOST || "localhost",
+    dbport: Number(process.env.DBPORT) || 3306,
+    dbUsername: process.env.DBUSERNAME || "root",
+    dbPassword: process.env.DBPASSWORD || "",
+    
+    dbDatabase: process.env.DBDATABASE || "test",
     logs: {
         level: process.env.LOG_LEVEL || 'silly'
     },

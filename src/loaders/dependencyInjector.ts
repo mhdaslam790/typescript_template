@@ -11,12 +11,13 @@ const dependencyInjector = async ({
     try {
         models.forEach(m => {
             Container.set(m.name, m.model);
-            Container.set('logger', loggerDev);
         });
+        Container.set('logger', loggerDev);
+        
     } catch (error) {
         loggerDev.error(`Error on dependency injector loader: ${error}`);
         throw error;
     }
 }
-export {dependencyInjector};
+export { dependencyInjector };
 export default dependencyInjector;

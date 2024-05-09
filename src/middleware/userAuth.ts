@@ -17,6 +17,10 @@ const userAuth: RequestHandler = handler(async (req: Request, res: Response, nex
             next(createError(httpStatus.BAD_REQUEST, 'Token not valid'));
             return;
          }
+         if (decoded && decoded.exp >= Math.floor(Date.now() / 1000)) {
+            req.userId = decoded.userId;
+            next();
+         }
          next();
     });
 });

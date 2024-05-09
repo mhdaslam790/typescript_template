@@ -1,7 +1,7 @@
 import { Inject, Service } from 'typedi';
-import { IUserInput, IUserService } from '../types/user';
-import mongoose from 'mongoose';
-import { IUser } from '../types/user';
+import { IUserInput, IUserService, UserSigninDto, UserSignupDto } from '../types/user';
+
+
 import { Logger } from 'winston';
 import httpStatus from 'http-status-codes';
 import createError from 'http-errors';
@@ -10,39 +10,40 @@ import { EventDispatcher, EventDispatcherInterface } from '../decorators/eventDi
 import { config } from '../config';
 import jwt from 'jsonwebtoken';
 import { AppEvents } from '../subcribers/event';
+import { Repository } from 'typeorm';
+import { User } from 'src/entity/user';
 
 @Service()
 export class UserService implements IUserService {
   constructor(
-    @Inject('userModel')
-    private userModel: mongoose.Model<IUser & mongoose.Document>,
+
+    @Inject('userDataSource') private userRepository: Repository<User>,
     @Inject('logger') private logger: Logger,
     @EventDispatcher()
     private eventDispatcher: EventDispatcherInterface,
   ) {
 
   }
-  public async getUser(id: string): Promise<IUser> {
+  public async getUser(id: number): Promise<User> {
     try {
-      const user = await this.userModel.findById(id).select('-password');
+      const user = await this.userRepository.findOneBy({id:id});
       return user;
     } catch (error) {
       throw createError(httpStatus.NOT_FOUND, `User ${id} doesn't exist`);
     }
   }
-  public async loginUser(userInput: IUserInput): Promise<any> {
-    const userCheck = await this.userModel.findOne({ username: userInput.username });
-    this.logger.info(`loginUser: ${userCheck.username}`);
-    this.logger.info(`loginUser: ${userCheck.email}`);
-    this.logger.info(`loginUser: ${userCheck.password}`);
+  public async loginUser(userInput: UserSigninDto): Promise<any> {
+    let userCheck = await this.userRepository.findOneBy({ username: userInput.username });
+    this.logger.info(`loginUser: ${userInput.username}`);
+   
     if (!userCheck) {
-    
+
       throw createError(httpStatus.FORBIDDEN, `Invalid credentials`);
     }
     this.logger.info(`loginUser: ${userCheck.username}`);
     const isMatch = await bcrypt.compare(
       userInput.password,
-      userCheck.password
+      userCheck.passwordHash
     );
 
     this.logger.debug(`isMatch: ${isMatch}`);
@@ -70,11 +71,13 @@ export class UserService implements IUserService {
     this.logger.error(`Error loginUser: ${error}`);
     throw error;
   }
+
+
   /* Register user */
-  public async registerUser(userInput: IUserInput) {
+  public async registerUser(userInput: UserSignupDto) {
     const { username, email, password } = userInput;
     try {
-      let user = await this.userModel.findOne({ username });
+      let user = await this.userRepository.findOneBy({ username: username });
 
       if (user) {
         throw createError(
@@ -82,7 +85,7 @@ export class UserService implements IUserService {
           `A user with username ${username} already exists`,
         );
       }
-      user = await this.userModel.findOne({ email });
+      user = await this.userRepository.findOneBy({ email: email });
       if (user) {
         throw createError(
           httpStatus.CONFLICT,
@@ -91,13 +94,12 @@ export class UserService implements IUserService {
       }
       // Encrypting password
       const salt = await bcrypt.genSalt(10);
-      const encryptPass = await bcrypt.hash(password, salt);
-      const userRecord = await this.userModel.create({
-        username: username,
-        email: email,
-        password: encryptPass,
-      });
+      userInput.passwordHash = await bcrypt.hash(password, salt);
 
+      const userRecord = await this.userRepository.save(
+        userInput
+      );
+      console.log(userRecord.id);
       // Return password
       const payload = {
         user: {
@@ -109,6 +111,10 @@ export class UserService implements IUserService {
         const token = jwt.sign(payload, jwtSecret, { expiresIn: '2h' });
 
         this.eventDispatcher.dispatch(AppEvents.user.signUp, userRecord);
+        await this.userRepository.save({
+          id: userRecord.id,
+          authKey: token,
+        });
         this.logger.info('Success registerUser');
         return token;
       } catch (error) {

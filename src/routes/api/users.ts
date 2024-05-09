@@ -11,7 +11,7 @@ import Container from "typedi";
 const userRouter = Router();
 
 userRouter.get(
-  '/userInfo',
+  '/userinfo',
   middleware.userAuth,
   handler(async (req: Request, res: Response) => {
     // user.req always get from middleware

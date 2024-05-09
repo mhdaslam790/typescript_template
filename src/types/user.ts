@@ -19,8 +19,10 @@ export interface IUserInput {
 }
 export class UserSigninDto {
     @IsString()
+    @IsNotEmpty()
     username: string;
     @IsString()
+    @IsNotEmpty()
     password: string;
 }
 

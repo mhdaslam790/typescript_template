@@ -1,5 +1,5 @@
 import { Inject, Service } from 'typedi';
-import { IUserInput, IUserService, UserSigninDto, UserSignupDto } from '../types/user';
+import { IUserService, UserSigninDto, UserSignupDto } from '../types/user';
 
 
 import { Logger } from 'winston';
@@ -12,12 +12,13 @@ import jwt from 'jsonwebtoken';
 import { AppEvents } from '../subcribers/event';
 import { Repository } from 'typeorm';
 import { User } from 'src/entity/user';
+import RepositoryConstant from '../constants/repositoryConstant';
 
 @Service()
 export class UserService implements IUserService {
   constructor(
 
-    @Inject('userDataSource') private userRepository: Repository<User>,
+    @Inject(RepositoryConstant.userDataSource) private userRepository: Repository<User>,
     @Inject('logger') private logger: Logger,
     @EventDispatcher()
     private eventDispatcher: EventDispatcherInterface,
@@ -26,7 +27,7 @@ export class UserService implements IUserService {
   }
   public async getUser(id: number): Promise<User> {
     try {
-      const user = await this.userRepository.findOneBy({id:id});
+      const user = await this.userRepository.findOneBy({ id: id });
       return user;
     } catch (error) {
       throw createError(httpStatus.NOT_FOUND, `User ${id} doesn't exist`);
@@ -35,7 +36,7 @@ export class UserService implements IUserService {
   public async loginUser(userInput: UserSigninDto): Promise<any> {
     let userCheck = await this.userRepository.findOneBy({ username: userInput.username });
     this.logger.info(`loginUser: ${userInput.username}`);
-   
+
     if (!userCheck) {
 
       throw createError(httpStatus.FORBIDDEN, `Invalid credentials`);
@@ -58,7 +59,14 @@ export class UserService implements IUserService {
     };
     const jwtSecret = config.jwtSecret;
     try {
-      const token = jwt.sign(payload, jwtSecret, { expiresIn: "24h" });
+      const token = jwt.sign(payload, jwtSecret, { expiresIn: config.expiresIn });
+
+      const decoded = await jwt.verify(token, jwtSecret);
+
+      await this.userRepository.save({
+        id: userCheck.id,
+        loginTime: decoded.iat,
+      });
       this.eventDispatcher.dispatch(AppEvents.user.signIn, userCheck);
       return token;
     } catch (error) {
@@ -108,13 +116,15 @@ export class UserService implements IUserService {
       };
       const jwtSecret = config.jwtSecret;
       try {
-        const token = jwt.sign(payload, jwtSecret, { expiresIn: '2h' });
+        const token = jwt.sign(payload, jwtSecret, { expiresIn: config.expiresIn });
 
-        this.eventDispatcher.dispatch(AppEvents.user.signUp, userRecord);
+        const decoded = await jwt.verify(token, jwtSecret);
+
         await this.userRepository.save({
           id: userRecord.id,
-          authKey: token,
+          loginTime: decoded.iat,
         });
+        this.eventDispatcher.dispatch(AppEvents.user.signUp, userRecord);
         this.logger.info('Success registerUser');
         return token;
       } catch (error) {

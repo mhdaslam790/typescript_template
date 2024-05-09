@@ -6,6 +6,7 @@ import { User } from "../entity/user";
 import dependencyInjector from "./dependencyInjector";
 import { expressLoader } from "./express";
 import { DataSource } from "typeorm";
+import  RepositoryConstant  from "../constants/repositoryConstant";
 
 export const loaders = async (app: Application): Promise<void> => {
     loggerDev.info("Loaders running");
@@ -13,7 +14,7 @@ export const loaders = async (app: Application): Promise<void> => {
 
     const dataSourceModel: IModelDI = { name: "dataSource", model: dataSource };
     const userDataSourceModel: IModelDI = {
-        name: "userDataSource", model: dataSource.getRepository(User),
+        name: RepositoryConstant.userDataSource, model: dataSource.getRepository(User),
     };
     await dependencyInjector({ models: [dataSourceModel, userDataSourceModel] });
     loggerDev.info('Dependency Injector loaded');

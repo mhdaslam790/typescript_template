@@ -12,7 +12,7 @@ export const config = {
     dbport: Number(process.env.DBPORT) || 3306,
     dbUsername: process.env.DBUSERNAME || "root",
     dbPassword: process.env.DBPASSWORD || "",
-    
+    expiresIn: process.env.EXPIRESIN || "1d",
     dbDatabase: process.env.DBDATABASE || "test",
     logs: {
         level: process.env.LOG_LEVEL || 'silly'

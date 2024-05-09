@@ -16,8 +16,8 @@ export class User {
     username: string;
 
     @Index({ unique: true })
-    @Column({ name: 'auth_key', length: 255, nullable: true })
-    authKey: string;
+    @Column({ name: 'login_time', type:'int',  nullable: true })
+    loginTime: string;
 
     @Column({ name: 'password_hash', length: 255 })
     passwordHash: string;
